@@ -25,10 +25,10 @@
 <body>
 
   <script type="text/javascript">
+  var g_VAMessage = null; 	// this will become a pointer to event.data coming from VA
+  var g_dataTable	; 	// this will hold the data as an array of ordered objects
+  var g_selections = [];
 
-    if (!inIframe()) {
-    	onDataReceived(SAMPLE_MESSAGE);
-    }
     const SAMPLE_MESSAGE = {
       version: "1",
       resultName: "result",
@@ -75,16 +75,49 @@
         }
       ]
     }; // Sample data message to render graph outside of VA for debugging
-
+  /*  if (!inIframe()) {
+      onDataReceived(SAMPLE_MESSAGE);
+    }*/
 
     va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
     updateChart();
 
+    function onDataReceived(event) {
+    	if (event && event.hasOwnProperty("data") && event.hasOwnProperty("columns") && event.hasOwnProperty("resultName") && event.data) {
+    		// Process event.data
+    		// Because data will dynamically change, we need an event handler to to redraw the chart
+    		eventHandlerFromVA(event);
+    	}
+    }
+    function eventHandlerFromVA(messageFromVA) {
+    	g_selectedCircle = null;
+    	g_selectedId = -1;
+
+    	// Saves the message for eventual Google Chart event handlers
+    	g_VAMessage = messageFromVA;
+
+    	// arrayData points to the real data object, so any changes to it will affect the data object
+    	var arrayData = messageFromVA.data;
+    	var columnsInfo = messageFromVA.columns;
+
+    	// Validate message contains right attributes
+    	if (!validateRoles(columnsInfo, ["string", "string", "string", "number"], [])) {
+    		va.messagingUtil.postInstructionalMessage( messageFromVA.resultName, "This Circle-Packing chart expects columns to be assigned in this order:\n" +
+    			" 1. Level 1 (string)\n" +
+    			" 2. Level 2 (string)\n" +
+    			" 3. Level 3 (string)\n" +
+    			" 4. Value (numeric)\n");
+    		return;
+    	}
+
+    	updateChart();
+    }
     function updateChart(){
       arrayData = SAMPLE_MESSAGE.data;
       columnsInfo = SAMPLE_MESSAGE.columns;
       convertData(arrayData, columnsInfo);
-      draw(g_dataTable);
+      var dataTable = (g_dataTable ? g_dataTable : g_sampleData);
+      draw(dataTable);
     }
 
     function convertData(arrayData, columnsInfo) {
@@ -260,7 +293,13 @@
     		eventHandlerFromVA(event);
     	}
     }
-
+    function inIframe() {
+    	try {
+    	  return window.self !== window.top;
+    	} catch (e) {
+    	  return true;
+    	}
+    }
     function eventHandlerFromVA(messageFromVA){
       var arrayData = messageFromVA.data;
       var columnsInfo = messageFromVA.columns;
