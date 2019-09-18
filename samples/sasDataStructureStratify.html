@@ -75,12 +75,13 @@ var margin = {top: 10, right: 10, bottom: 10, left: 10};
         }
       ]
     }; // Sample data message to render graph outside of VA for debugging
-  /*  if (!inIframe()) {
+    if (!inIframe()) {
       onDataReceived(SAMPLE_MESSAGE);
+      console.log(' AAA');
     }
 
 
-*/
+
 function initChart() {
 	// Listen for resize event
 	va.contentUtil.setupResizeListener(updateChart);
@@ -89,7 +90,9 @@ function initChart() {
     	if (event && event.hasOwnProperty("data") && event.hasOwnProperty("columns") && event.hasOwnProperty("resultName") && event.data) {
     		// Process event.data
     		// Because data will dynamically change, we need an event handler to to redraw the chart
-    		eventHandlerFromVA(event);
+  console.log(event);
+        eventHandlerFromVA(event);
+
     	}
     }
     function eventHandlerFromVA(messageFromVA) {
@@ -101,6 +104,7 @@ function initChart() {
 
     	// arrayData points to the real data object, so any changes to it will affect the data object
     	var arrayData = messageFromVA.data;
+      console.log(arrayData);
     	var columnsInfo = messageFromVA.columns;
 
     	// Validate message contains right attributes
@@ -112,15 +116,20 @@ function initChart() {
     			" 4. Value (numeric)\n");
     		return;
     	}
-
+convertData(arrayData, columnsInfo);
     	updateChart();
     }
     function updateChart(){
-      arrayData = SAMPLE_MESSAGE.data;
-      columnsInfo = SAMPLE_MESSAGE.columns;
-      convertData(arrayData, columnsInfo);
+    //  arrayData = SAMPLE_MESSAGE.data;
+  //    columnsInfo = SAMPLE_MESSAGE.columns;
+      //convertData(arrayData, columnsInfo);
+      var width = window.innerWidth - margin.left - margin.right;
+      var height = window.innerHeight - margin.top - margin.bottom;
+
+      var _width = Math.max(width, 5);
+    	var _height = _width;
       var dataTable = (g_dataTable ? g_dataTable : g_sampleData);
-      draw(dataTable);
+      draw(dataTable, _width, _height);
     }
 
     function convertData(arrayData, columnsInfo) {
@@ -199,11 +208,10 @@ function initChart() {
       }
     }
 
-    function draw(data) {
+    function draw(data,width,height) {
       // set the dimensions and margins of the diagram
       //var margin = {top: 20, right: 90, bottom: 30, left: 90},
-      var width = window.innerWidth - margin.left - margin.right;
-      var height = window.innerHeight - margin.top - margin.bottom;
+
 
       // declares a tree layout and assigns the size
       var treemap = d3.tree()
@@ -313,5 +321,6 @@ function initChart() {
     }
     va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
     initChart();
-    updateChart();
+  //  updateChart();
   </script>
+
