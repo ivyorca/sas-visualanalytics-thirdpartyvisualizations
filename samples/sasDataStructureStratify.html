@@ -81,6 +81,10 @@
 
 
 */
+function initChart() {
+	// Listen for resize event
+	va.contentUtil.setupResizeListener(updateChart);
+}
     function onDataReceived(event) {
     	if (event && event.hasOwnProperty("data") && event.hasOwnProperty("columns") && event.hasOwnProperty("resultName") && event.data) {
     		// Process event.data
@@ -308,5 +312,6 @@
       updateChart();
     }
     va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+    initChart();
     updateChart();
   </script>
