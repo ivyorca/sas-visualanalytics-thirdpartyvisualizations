@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script type="text/javascript" src="../util/messagingUtil.js"></script>
+	<script type="text/javascript" src="../util/contentUtil.js"></script>
+  <style>
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 3px;
+    }
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <script type="text/javascript">
+
+    if (!inIframe()) {
+    	onDataReceived(SAMPLE_MESSAGE);
+    }
+    const SAMPLE_MESSAGE = {
+      version: "1",
+      resultName: "result",
+      rowCount: 6,
+      availableRowCount: 6,
+      data: [
+        ["US", "Northeast", "New York", 1800],
+        ["US", "Northeast", "Massachusetts", 500],
+        ["US", "Northeast", "Connecticut", 500],
+        ["US", "Northeast", "New Jersey", 600],
+        ["US", "Southeast", "North Carolina", 1700],
+        ["US", "Southeast", "Virginia", 900],
+        ["US", "Southeast", "Florida", 1500],
+        ["US", "Southwest", "Arizona", 600],
+        ["US", "Southwest", "New Mexico", 400]
+      ],
+      columns: [{
+          name: "column",
+          label: "Level1",
+          type: "string"
+        },
+        {
+          name: "column",
+          label: "Level2",
+          type: "string"
+        },
+        {
+          name: "column",
+          label: "Level3",
+          type: "string"
+        },
+        {
+          name: "bi78",
+          label: "Value",
+          type: "number",
+          usage: "quantitative",
+          aggregation: "totalCount",
+          format: {
+            name: "COMMA",
+            width: 12,
+            precision: 0,
+            formatString: "COMMA12."
+          }
+        }
+      ]
+    }; // Sample data message to render graph outside of VA for debugging
+
+
+    va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+    updateChart();
+
+    function updateChart(){
+      arrayData = SAMPLE_MESSAGE.data;
+      columnsInfo = SAMPLE_MESSAGE.columns;
+      convertData(arrayData, columnsInfo);
+      draw(g_dataTable);
+    }
+
+    function convertData(arrayData, columnsInfo) {
+      var len = arrayData.length;
+      var reg1 = null;
+      var reg2 = null;
+      var reg3 = null;
+      var startCol = 1;
+      var reg1 = arrayData[0][0];
+      var allRows = [];
+
+      for (var i = 0; i < len; i++) {
+        if (arrayData[i][0] != reg1) {
+          reg1 = "Regions";
+          startCol = 0;
+          break;
+        }
+      }
+
+      var rows2;
+      var rows3;
+      g_dataTable = [];
+      g_dataTable.push({
+        id: reg1,
+        value: "",
+        row: allRows
+      });
+
+      for (var i = 0; i < len; i++) {
+        allRows.push(i);
+        if (arrayData[i][0])
+          arrayData[i][0] = arrayData[i][0].replace(".", "_");
+        if (arrayData[i][1])
+          arrayData[i][1] = arrayData[i][1].replace(".", "_");
+        if (arrayData[i][2])
+          arrayData[i][2] = arrayData[i][2].replace(".", "_");
+
+        if (reg2 != arrayData[i][startCol]) {
+          reg2 = arrayData[i][startCol];
+          rows2 = [i];
+          g_dataTable.push({
+            id: reg1 + "." + reg2,
+            value: "",
+            row: rows2
+          });
+        } else {
+          rows2.push(i);
+        }
+
+        if (startCol == 0 && reg3 != arrayData[i][startCol + 1]) {
+          reg3 = arrayData[i][startCol + 1];
+          rows3 = [i];
+          g_dataTable.push({
+            id: reg1 + "." + reg2 + "." + reg3,
+            value: "",
+            row: rows3
+          });
+        } else {
+          if (!rows3)
+            rows3 = [];
+          rows3.push(i);
+        }
+
+        if (startCol == 0)
+          g_dataTable.push({
+            id: reg1 + "." + reg2 + "." + reg3 + "." + arrayData[i][startCol + 2],
+            value: arrayData[i][startCol + 3],
+            row: [i]
+          });
+        else
+          g_dataTable.push({
+            id: reg1 + "." + reg2 + "." + arrayData[i][startCol + 1],
+            value: arrayData[i][startCol + 2],
+            row: [i]
+          });
+      }
+    }
+
+    function draw(data) {
+      // set the dimensions and margins of the diagram
+      var margin = {top: 20, right: 90, bottom: 30, left: 90},
+      width = 660 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+
+      // declares a tree layout and assigns the size
+      var treemap = d3.tree()
+        .size([height, width]);
+
+      console.log(data);
+      var stratify = d3.stratify()
+        .parentId(function(d) {
+          return d.id.substring(0, d.id.lastIndexOf("."));
+        });
+      var root = stratify(data)
+        .sum(function(d) {
+          return d.value
+        })
+        .sort(function(a, b) {
+          return b.value - a.value;
+        });
+      console.log(root);
+      root.each(function(d) {
+        d.name = d.id;
+        console.log(d.name);
+      });
+
+
+      //  assigns the data to a hierarchy using parent-child relationships
+      var nodes = d3.hierarchy(root, function(d) {
+        return d.children;
+      });
+
+      // maps the node data to the tree layout
+      nodes = treemap(nodes);
+
+      // append the svg object to the body of the page
+      // appends a 'group' element to 'svg'
+      // moves the 'group' element to the top left margin
+      var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom),
+        g = svg.append("g")
+        .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+      // adds the links between the nodes
+      var link = g.selectAll(".link")
+        .data(nodes.descendants().slice(1))
+        .enter().append("path")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          return "M" + d.y + "," + d.x +
+            "C" + (d.y + d.parent.y) / 2 + "," + d.x +
+            " " + (d.y + d.parent.y) / 2 + "," + d.parent.x +
+            " " + d.parent.y + "," + d.parent.x;
+        });
+
+      // adds each node as a group
+      var node = g.selectAll(".node")
+        .data(nodes.descendants())
+        .enter().append("g")
+        .attr("class", function(d) {
+          return "node" +
+            (d.children ? " node--internal" : " node--leaf");
+        })
+        .attr("transform", function(d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
+
+      // adds the circle to the node
+      node.append("circle")
+        .attr("r", 10);
+
+      // adds the text to the node
+      node.append("text")
+      .attr("dy", ".35em")
+      .attr("x", function(d) {
+      return d.children ? -13 : 13;
+      })
+      .style("text-anchor", function(d) {
+      return d.children ? "end" : "start";
+      })
+      .text(function(d) {
+      var nameNode = d.data.name.split(".").pop();
+      return nameNode;
+      });
+    }
+    function onDataReceived(event) {
+    	if (event && event.hasOwnProperty("data") && event.hasOwnProperty("columns") && event.hasOwnProperty("resultName") && event.data) {
+    		// Process event.data
+    		// Because data will dynamically change, we need an event handler to to redraw the chart
+        console.log(event);
+    		eventHandlerFromVA(event);
+    	}
+    }
+
+    function eventHandlerFromVA(messageFromVA){
+      var arrayData = messageFromVA.data;
+      var columnsInfo = messageFromVA.columns;
+      convertData(arrayData, columnsInfo);
+
+      // Refresh chart
+      updateChart();
+    }
+  </script>
