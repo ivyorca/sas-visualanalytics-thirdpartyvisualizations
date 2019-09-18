@@ -77,11 +77,10 @@
     }; // Sample data message to render graph outside of VA for debugging
   /*  if (!inIframe()) {
       onDataReceived(SAMPLE_MESSAGE);
-    }*/
+    }
 
-    va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
-    updateChart();
 
+*/
     function onDataReceived(event) {
     	if (event && event.hasOwnProperty("data") && event.hasOwnProperty("columns") && event.hasOwnProperty("resultName") && event.data) {
     		// Process event.data
@@ -308,4 +307,6 @@
       // Refresh chart
       updateChart();
     }
+    va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+    updateChart();
   </script>
