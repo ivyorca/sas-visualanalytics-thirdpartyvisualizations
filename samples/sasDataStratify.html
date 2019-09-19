@@ -227,7 +227,7 @@ d3.select("svg").remove();
 
       // declares a tree layout and assigns the size
       var treemap = d3.tree()
-        .size([100, 100]);
+        .size([width, height]);
 
       console.log(data);
       var stratify = d3.stratify()
