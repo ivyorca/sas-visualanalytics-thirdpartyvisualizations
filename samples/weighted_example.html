@@ -63,7 +63,7 @@ var svg = d3.select("div#viz").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 //loading the json file
-d3.json("../DATA/data.json", function(error, flare) {
+d3.json("data.json", function(error, flare) {
   edge_weight.domain([0,flare.size]);
   root = flare;
   root.x0 = height / 2;
