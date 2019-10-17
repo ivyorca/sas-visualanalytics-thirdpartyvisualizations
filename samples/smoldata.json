@@ -1,0 +1,20 @@
+var root = {
+    "name": "flare",
+            "children": [{
+                "name": "Cluster",
+                    "size": 5,
+                    "children": [{
+                          "name": "Structure",
+                              "size": 8
+                    }]
+            }, {
+                "name": "Structure",
+                    "size": 8
+            }, {
+                "name": "Cluster",
+                    "size": 60
+            }, {
+                "name": "MergeEdge",
+                    "size": 4
+            }]
+};
