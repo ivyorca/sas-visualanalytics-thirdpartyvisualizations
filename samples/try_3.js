@@ -51,7 +51,7 @@ function convertData(arrayData, columnsInfo) {
     arr_len = arrayData[i].length;
     for (var j = 0; j < arr_len; j++) {
       cols_array_toreduce.push(colname_arr[j]);
-      if(arrayData[i][j].equals("(missing)"))
+      if(arrayData[i][j].equals("(missing)")){
       data_array_toreduce.push("");
       console.log("missing replaced");
     }else {
