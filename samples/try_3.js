@@ -51,6 +51,9 @@ function convertData(arrayData, columnsInfo) {
     arr_len = arrayData[i].length;
     for (var j = 0; j < arr_len; j++) {
       cols_array_toreduce.push(colname_arr[j]);
+      if(arrayData[i][j].equals("(missing)"))
+      data_array_toreduce.push("");
+    }else {
       data_array_toreduce.push(arrayData[i][j]);
     }
     var result = data_array_toreduce.reduce(function(result, field, index) {
@@ -196,7 +199,6 @@ function onDataReceived(event) {
 function eventHandlerFromVA(messageFromVA) {
   var arrayData = messageFromVA.data;
   var columnsInfo = messageFromVA.columns;
-  console.log(messageFromVA);
   convertData(arrayData, columnsInfo);
 }
 
