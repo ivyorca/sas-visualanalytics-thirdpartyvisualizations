@@ -196,6 +196,7 @@ function onDataReceived(event) {
 function eventHandlerFromVA(messageFromVA) {
   var arrayData = messageFromVA.data;
   var columnsInfo = messageFromVA.columns;
+  console.log(messageFromVA);
   convertData(arrayData, columnsInfo);
 }
 
