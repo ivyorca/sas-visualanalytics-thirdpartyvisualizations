@@ -72,6 +72,7 @@ function csv_parse() {
 }
 
 function stratify_data(csv_data) {
+  console.log(csv_data);
   var root = d3
     .stratify()
     .id(function(d) {
