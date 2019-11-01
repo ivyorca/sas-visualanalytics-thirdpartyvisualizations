@@ -26,12 +26,12 @@ function sample_va() {
     columns: [
       {
         name: "column",
-        label: "Level1",
+        label: "id",
         type: "string"
       },
       {
         name: "column",
-        label: "Level2",
+        label: "p_id",
         type: "string"
       }
     ]
