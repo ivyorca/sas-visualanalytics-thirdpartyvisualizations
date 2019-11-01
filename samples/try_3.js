@@ -51,12 +51,11 @@ function convertData(arrayData, columnsInfo) {
     arr_len = arrayData[i].length;
     for (var j = 0; j < arr_len; j++) {
       cols_array_toreduce.push(colname_arr[j]);
-      if(arrayData[i][j] == "missing"){
+      if (arrayData[i][j] == "missing") {
         data_array_toreduce.push("");
-      }else{
+      } else {
         data_array_toreduce.push(arrayData[i][j]);
       }
-
     }
     var result = data_array_toreduce.reduce(function(result, field, index) {
       result[cols_array_toreduce[index]] = field;
