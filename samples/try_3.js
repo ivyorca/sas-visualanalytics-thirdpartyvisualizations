@@ -1,41 +1,43 @@
+var d_dataTable;
+var root1;
+const SAMPLE_MESSAGE = {
+  version: "1",
+  resultName: "result",
+  rowCount: 6,
+  availableRowCount: 6,
+  data: [
+    ["5Z78190499", "(missing)"],
+    ["1E04201305", "5Z78190499"],
+    ["1N34201907", "5Z78190499"],
+    ["4H33202112", "5Z78190499"],
+    ["8C26190184", "5Z78190499"],
+    ["4G23200513", "4H33202112"],
+    ["3G66190496", "8C26190184"],
+    ["0H59201108", "1N34201907"],
+    ["8K71202310", "1E04201305"],
+    ["7G77202616", "8K71202310"],
+    ["2M54190495", "0H59201108"],
+    ["4Z58201108", "0H59201108"],
+    ["8Z36190098", "0H59201108"],
+    ["9H00201310", "0H59201108"],
+    ["9Z80200103", "0H59201108"],
+    ["8W17201713", "4G23200513"],
+    ["6K44202309", "3G66190496"]
+  ],
+  columns: [
+    {
+      name: "column",
+      label: "id",
+      type: "string"
+    },
+    {
+      name: "column",
+      label: "p_id",
+      type: "string"
+    }
+  ]
+};
 function sample_va() {
-  const SAMPLE_MESSAGE = {
-    version: "1",
-    resultName: "result",
-    rowCount: 6,
-    availableRowCount: 6,
-    data: [
-      ["5Z78190499", "(missing)"],
-      ["1E04201305", "5Z78190499"],
-      ["1N34201907", "5Z78190499"],
-      ["4H33202112", "5Z78190499"],
-      ["8C26190184", "5Z78190499"],
-      ["4G23200513", "4H33202112"],
-      ["3G66190496", "8C26190184"],
-      ["0H59201108", "1N34201907"],
-      ["8K71202310", "1E04201305"],
-      ["7G77202616", "8K71202310"],
-      ["2M54190495", "0H59201108"],
-      ["4Z58201108", "0H59201108"],
-      ["8Z36190098", "0H59201108"],
-      ["9H00201310", "0H59201108"],
-      ["9Z80200103", "0H59201108"],
-      ["8W17201713", "4G23200513"],
-      ["6K44202309", "3G66190496"]
-    ],
-    columns: [
-      {
-        name: "column",
-        label: "id",
-        type: "string"
-      },
-      {
-        name: "column",
-        label: "p_id",
-        type: "string"
-      }
-    ]
-  };
   var arrayData = SAMPLE_MESSAGE.data;
   var columnsInfo = SAMPLE_MESSAGE.columns;
   convertData(arrayData, columnsInfo);
@@ -75,7 +77,7 @@ function csv_parse() {
   });
 }
 
-function stratify_data(csv_data){
+function stratify_data(csv_data) {
   var root = d3
     .stratify()
     .id(function(d) {
@@ -85,42 +87,47 @@ function stratify_data(csv_data){
       return d.p_id;
     })(csv_data);
   console.log(root);
+  root1 = root;
   console.log(d3.hierarchy(root));
-  updateChart(root);
+  //updateChart(root1);
 }
 
-function updateChart(data){
+function updateChart() {
   var margin = {
-      top: 40,
-      right: 90,
-      bottom: 50,
-      left: 90
-    };
+    top: 40,
+    right: 90,
+    bottom: 50,
+    left: 90
+  };
   var width = window.innerWidth - margin.left - margin.right;
-   var height = window.innerHeight - margin.top - margin.bottom;
+  var height = window.innerHeight - margin.top - margin.bottom;
+  console.log(width);
+  // width = 660 - margin.left - margin.right,
+  // height = 500 - margin.top - margin.bottom;
 
-     // width = 660 - margin.left - margin.right,
-     // height = 500 - margin.top - margin.bottom;
+  var chart = d3.select("div#chart");
+  var svg = chart
+      .select("svg#tree")
+      // .select("body")
+      // .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom),
+    g = svg
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  //console.log(data);
+  //draw(data,width,height);
 
-     var chart = d3.select("div#chart");
-     var svg = chart.select("svg#tree")
-         // .select("body")
-         // .append("svg")
-         .attr("width", width + margin.left + margin.right)
-         .attr("height", height + margin.top + margin.bottom),
-       g = svg
-         .append("g")
-         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-         draw(data,width,height);
+  var dataTable = root1;
+  draw(dataTable, width, height);
 }
 
-
-function draw(treeData,width,height) {
-var svg = d3.select("svg");
+function draw(treeData, width, height) {
+  var svg = d3.select("svg");
   // declares a tree layout and assigns the size
-  var treemap = d3.tree().size([width, height]);
-
+  var treemap = d3.tree().size([width - 2, height - 2]);
   //  assigns the data to a hierarchy using parent-child relationships
+  console.log(treeData);
   var nodes = d3.hierarchy(treeData);
 
   // maps the node data to the tree layout
@@ -140,7 +147,8 @@ var svg = d3.select("svg");
   //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // adds the links between the nodes
-  var link = svg.select("g")
+  var link = svg
+    .select("g")
     .selectAll(".link")
     .data(nodes.descendants().slice(1))
     .enter()
@@ -167,17 +175,18 @@ var svg = d3.select("svg");
       );
     })
     .attr("stroke-width", function(d) {
-      var strokevar;
-      if (((d.data.data.value)/100*15)<1){
-        strokevar = 1;
-      }else{
-        strokevar =((d.data.data.value)/100*15);
-      }
-      return strokevar;
+      // var strokevar;
+      // if (((d.data.data.value)/100*15)<1){
+      //   strokevar = 1;
+      // }else{
+      //   strokevar =((d.data.data.value)/100*15);
+      // }
+      // return strokevar;
     });
 
   // adds each node as a group
-  var node = svg.select("g")
+  var node = svg
+    .select("g")
     .selectAll(".node")
     .data(nodes.descendants())
     .enter()
@@ -227,7 +236,10 @@ function eventHandlerFromVA(messageFromVA) {
   convertData(arrayData, columnsInfo);
 }
 
-
+if (!inIframe()) {
+  // sample_va();
+  onDataReceived(SAMPLE_MESSAGE);
+}
 function inIframe() {
   try {
     return window.self !== window.top;
@@ -237,14 +249,10 @@ function inIframe() {
 }
 
 function initChart() {
-	// Listen for resize event
-	va.contentUtil.setupResizeListener(updateChart);
+  // Listen for resize event
+  va.contentUtil.setupResizeListener(updateChart);
 }
 
 va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
 initChart();
-if (!inIframe()) {
-  // sample_va();
-  csv_parse();
-
-}
+updateChart();
