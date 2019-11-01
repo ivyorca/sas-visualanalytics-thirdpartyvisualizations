@@ -75,8 +75,7 @@ function csv_parse() {
   });
 }
 
-function stratify_data(csv_data) {
-  console.log(csv_data);
+function stratify_data(csv_data){
   var root = d3
     .stratify()
     .id(function(d) {
@@ -87,19 +86,37 @@ function stratify_data(csv_data) {
     })(csv_data);
   console.log(root);
   console.log(d3.hierarchy(root));
-  draw(root);
+  updateChart(root);
 }
 
-function draw(treeData) {
+function updateChart(data){
   var margin = {
       top: 40,
       right: 90,
       bottom: 50,
       left: 90
-    },
-    width = 660 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    };
+  var width = window.innerWidth - margin.left - margin.right;
+   var height = window.innerHeight - margin.top - margin.bottom;
 
+     // width = 660 - margin.left - margin.right,
+     // height = 500 - margin.top - margin.bottom;
+
+     var chart = d3.select("div#chart");
+     var svg = chart.select("svg#tree")
+         // .select("body")
+         // .append("svg")
+         .attr("width", width + margin.left + margin.right)
+         .attr("height", height + margin.top + margin.bottom),
+       g = svg
+         .append("g")
+         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+         draw(data,width,height);
+}
+
+
+function draw(treeData,width,height) {
+var svg = d3.select("svg");
   // declares a tree layout and assigns the size
   var treemap = d3.tree().size([width, height]);
 
@@ -108,21 +125,22 @@ function draw(treeData) {
 
   // maps the node data to the tree layout
   nodes = treemap(nodes);
-
-  // append the svg obgect to the body of the page
-  // appends a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
-  var svg = d3
-      .select("body")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom),
-    g = svg
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  //
+  // // append the svg obgect to the body of the page
+  // // appends a 'group' element to 'svg'
+  // // moves the 'group' element to the top left margin
+  // var chart = d3.select("div#chart");
+  // var svg = chart.select("svg#tree")
+  //     // .select("body")
+  //     // .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom),
+  //   g = svg
+  //     .append("g")
+  //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // adds the links between the nodes
-  var link = g
+  var link = svg.select("g")
     .selectAll(".link")
     .data(nodes.descendants().slice(1))
     .enter()
@@ -149,11 +167,17 @@ function draw(treeData) {
       );
     })
     .attr("stroke-width", function(d) {
-      return d.data.value;
+      var strokevar;
+      if (((d.data.data.value)/100*15)<1){
+        strokevar = 1;
+      }else{
+        strokevar =((d.data.data.value)/100*15);
+      }
+      return strokevar;
     });
 
   // adds each node as a group
-  var node = g
+  var node = svg.select("g")
     .selectAll(".node")
     .data(nodes.descendants())
     .enter()
@@ -166,7 +190,7 @@ function draw(treeData) {
     });
 
   // adds the circle to the node
-  node.append("circle").attr("r", 8);
+  node.append("circle").attr("r", 10);
 
   // adds the text to the node
   node
@@ -203,9 +227,7 @@ function eventHandlerFromVA(messageFromVA) {
   convertData(arrayData, columnsInfo);
 }
 
-if (!inIframe()) {
-  sample_va();
-}
+
 function inIframe() {
   try {
     return window.self !== window.top;
@@ -213,4 +235,16 @@ function inIframe() {
     return true;
   }
 }
+
+function initChart() {
+	// Listen for resize event
+	va.contentUtil.setupResizeListener(updateChart);
+}
+
 va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+initChart();
+if (!inIframe()) {
+  // sample_va();
+  csv_parse();
+
+}
