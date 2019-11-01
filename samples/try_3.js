@@ -53,6 +53,7 @@ function convertData(arrayData, columnsInfo) {
       cols_array_toreduce.push(colname_arr[j]);
       if(arrayData[i][j].equals("(missing)"))
       data_array_toreduce.push("");
+      console.log("missing replaced");
     }else {
       data_array_toreduce.push(arrayData[i][j]);
     }
