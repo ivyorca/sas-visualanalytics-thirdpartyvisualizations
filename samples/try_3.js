@@ -227,8 +227,8 @@ function onDataReceived(event) {
     // Process event.data
     // Because data will dynamically change, we need an event handler to to redraw the chart
     eventHandlerFromVA(event);
-  }
   console.log("ondatareceive");
+  }
 }
 
 function eventHandlerFromVA(messageFromVA) {
