@@ -37,6 +37,27 @@ const SAMPLE_MESSAGE = {
     }
   ]
 };
+
+var g_sampleData = [
+  {id: "5Z78190499", p_id: "", nlevel: "", value: ""},
+  {id: "1E04201305", p_id: "5Z78190499", nlevel: "1", value: "100"},
+  {id: "1N34201907", p_id: "5Z78190499", nlevel: "1", value: "100"},
+  {id: "4H33202112", p_id: "5Z78190499", nlevel: "1", value: "100"},
+  {id: "8C26190184", p_id: "5Z78190499", nlevel: "1", value: "100"},
+  {id: "4G23200513", p_id: "4H33202112", nlevel: "2", value: "100"},
+  {id: "3G66190496", p_id: "8C26190184", nlevel: "2", value: "100"},
+  {id: "0H59201108", p_id: "1N34201907", nlevel: "2", value: "100"},
+  {id: "8K71202310", p_id: "1E04201305", nlevel: "2", value: "50"},
+  {id: "7G77202616", p_id: "8K71202310", nlevel: "3", value: "80"},
+  {id: "2M54190495", p_id: "0H59201108", nlevel: "3", value: "100"},
+  {id: "4Z58201108", p_id: "0H59201108", nlevel: "3", value: "75"},
+  {id: "8Z36190098", p_id: "0H59201108", nlevel: "3", value: "7.5"},
+  {id: "9H00201310", p_id: "0H59201108", nlevel: "3", value: "100"},
+  {id: "9Z80200103", p_id: "0H59201108", nlevel: "3", value: "65"},
+  {id: "8W17201713", p_id: "4G23200513", nlevel: "3", value: "50"},
+  {id: "6K44202309", p_id: "3G66190496", nlevel: "3", value: "50"}
+];
+
 function sample_va() {
   var arrayData = SAMPLE_MESSAGE.data;
   var columnsInfo = SAMPLE_MESSAGE.columns;
@@ -93,6 +114,7 @@ function stratify_data(csv_data) {
 }
 
 function updateChart() {
+  d3.selectAll('g').remove();
   var margin = {
     top: 40,
     right: 90,
@@ -109,16 +131,17 @@ function updateChart() {
   var svg = chart
       .select("svg#tree")
       // .select("body")
-      // .append("svg")
+      // // .append("svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom),
-    g = svg
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("height", height + margin.top + margin.bottom)
+  //  g = svg
+
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .append("g");
   //console.log(data);
   //draw(data,width,height);
 
-  var dataTable = root1;
+  var dataTable = (root1 ? root1 : g_sampleData);
   draw(dataTable, width, height);
 }
 
@@ -227,14 +250,15 @@ function onDataReceived(event) {
     // Process event.data
     // Because data will dynamically change, we need an event handler to to redraw the chart
     eventHandlerFromVA(event);
-  console.log("ondatareceive");
   }
+
 }
 
 function eventHandlerFromVA(messageFromVA) {
   var arrayData = messageFromVA.data;
   var columnsInfo = messageFromVA.columns;
   convertData(arrayData, columnsInfo);
+  updateChart();
 }
 
 if (!inIframe()) {
