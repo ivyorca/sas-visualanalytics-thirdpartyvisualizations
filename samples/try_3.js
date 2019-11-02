@@ -198,13 +198,13 @@ function draw(treeData, width, height) {
       );
     })
     .attr("stroke-width", function(d) {
-      // var strokevar;
-      // if (((d.data.data.value)/100*15)<1){
-      //   strokevar = 1;
-      // }else{
-      //   strokevar =((d.data.data.value)/100*15);
-      // }
-      // return strokevar;
+      var strokevar;
+      if (((d.data.data.value)/100*15)<1){
+        strokevar = 1;
+      }else{
+        strokevar =((d.data.data.value)/100*15);
+      }
+      return strokevar;
     });
 
   // adds each node as a group
