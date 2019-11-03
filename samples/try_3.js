@@ -219,6 +219,10 @@ function draw(treeData, width, height) {
     })
     .attr("transform", function(d) {
       return "translate(" + d.x + "," + d.y + ")";
+    })
+    .on("click", function(d) {
+      console.log(d);
+      construct_generations(d);
     });
 
   // adds the circle to the node
@@ -277,6 +281,19 @@ function initChart() {
   // Listen for resize event
   va.contentUtil.setupResizeListener(updateChart);
 }
+
+construct_generations = function(d) {
+  var c, generations;
+  c = d; // make a clone of d.
+  console.log(d);
+  generations = []; // Array for each ancestors children. Will reconstruct later on body click
+  while (c.parent) {
+    generations.push(c.parent.children);
+    c = c.parent;
+  }
+  console.log(generations);
+//  return generations;
+};
 
 va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
 initChart();
