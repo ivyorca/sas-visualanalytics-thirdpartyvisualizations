@@ -237,6 +237,7 @@ function draw(treeData, width, height) {
     })
     .style("text-anchor", "middle")
     .text(function(d) {
+      console.log(d.data.data.id);
       return d.data.data.id;
     });
 }
