@@ -231,13 +231,13 @@ function draw(treeData, width, height) {
   // adds the text to the node
   node
     .append("text")
-    .attr("dy", ".35em")
+    .attr("dy", ".25em")
     .attr("y", function(d) {
       return d.children ? -20 : 20;
     })
     .style("text-anchor", "middle")
     .text(function(d) {
-      return d.data.name;
+      return d.data.data.id;
     });
 }
 // csv_parse();
