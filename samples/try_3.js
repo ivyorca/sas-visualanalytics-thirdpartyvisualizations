@@ -200,10 +200,10 @@ function draw(treeData, width, height) {
     })
     .attr("stroke-width", function(d) {
       var strokevar;
-      if (((d.data.data.value)/100*15)<1){
+      if (((d.data.data.value)/100*20)<1){
         strokevar = 1;
       }else{
-        strokevar =((d.data.data.value)/100*15);
+        strokevar =((d.data.data.value)/100*20);
       }
       return strokevar;
     });
