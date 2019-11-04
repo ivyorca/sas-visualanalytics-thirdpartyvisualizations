@@ -137,7 +137,8 @@ function updateChart() {
   //  g = svg
 
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .append("g");
+      .append("g")
+      .attr("transform", "translate(" + 30 + "," + 30 + ")");
   //console.log(data);
   //draw(data,width,height);
 
