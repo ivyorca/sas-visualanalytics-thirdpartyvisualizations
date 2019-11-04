@@ -2,18 +2,21 @@
 var c_id;
 var searchField;
 var root2;
-function clearRoot2(){
+function clearRoot2() {
   console.log("hi");
   root2 = null;
   updateChart();
 }
 function filter() {
-  updateChart();
   c_id = document.getElementById("c_id").value;
-  console.log(c_id);
-  searchField = "d.id";
-  console.log(root1);
-  searchTree(root1);
+  if (c_id) {
+    updateChart();
+
+    console.log(c_id);
+    searchField = "d.id";
+    console.log(root1);
+    searchTree(root1);
+  }
 }
 
 function searchTree(d) {
@@ -197,19 +200,17 @@ function updateChart() {
     .attr("transform", "translate(" + 30 + "," + 30 + ")");
   //console.log(data);
   //draw(data,width,height);
-//  console.log(root1);
-var dataTable = [];
-console.log(root2);
-if(root2 == null){
-  console.log("drawn");
-  dataTable = root1 ? root1 : g_sampleData;
-  console.log(root1);
-  draw(dataTable, width, height);
-}else{
-dataTable = root2;
-console.log("wrong");
-  draw(dataTable, width, height);
-}
+  //  console.log(root1);
+  var dataTable = [];
+  console.log(root2);
+  if (root2) {
+    dataTable = root2;
+    draw(dataTable, width, height);
+  } else {
+    dataTable = root1 ? root1 : g_sampleData;
+    console.log(root1);
+    draw(dataTable, width, height);
+  }
 }
 
 function draw(treeData, width, height) {
@@ -275,6 +276,27 @@ function draw(treeData, width, height) {
       return strokevar;
     });
 
+  link
+    .append("text")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .attr("fill", "Black")
+    .style("font", "normal 12px Arial")
+    .attr("transform", function(d) {
+      return (
+        "translate(" +
+        (d.parent.y + d.parent.y) / 2 +
+        "," +
+        (d.parent.x + d.parent.x) / 2 +
+        ")"
+      );
+    })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .text(function(d) {
+      console.log(d.data.data.value);
+      return d.data.data.value + "%";
+    });
+
   // adds each node as a group
   var node = svg
     .select("g")
@@ -305,7 +327,7 @@ function draw(treeData, width, height) {
     })
     .style("text-anchor", "middle")
     .text(function(d) {
-    //  console.log(d.data.data.id);
+      //  console.log(d.data.data.id);
       return d.data.data.id;
     });
 }
