@@ -385,7 +385,7 @@ function draw(treeData, width, height) {
     .append("text")
     .attr("dy", ".25em")
     .attr("y", function(d) {
-      return d.children ? -20 : 20;
+      return d.children ? -20 : 25;
     })
     .style("text-anchor", "middle")
     .text(function(d) {
