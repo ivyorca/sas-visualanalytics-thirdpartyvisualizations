@@ -284,14 +284,19 @@ function draw(treeData, width, height) {
 
     link.append("path")
         .attr("fill", "none")
+        .attr("opacity", "0.7")
         .attr("stroke-width", function(d) {
+          if(d.data.data.value){
           var strokevar;
           if ((d.data.data.value / 100) * 20 < 1) {
-            strokevar = 1;
+            strokevar = 2.5;
           } else {
             strokevar = (d.data.data.value / 100) * 20;
           }
-          return strokevar;
+          return strokevar;}
+          else{
+            return 5;
+          }
         })
         .attr("d", function(d) {
             return (
@@ -317,6 +322,7 @@ function draw(treeData, width, height) {
     link.append("text")
         .attr("font-family", "Arial, Helvetica, sans-serif")
         .attr("fill", "Black")
+        .attr("stroke", "Black")
         .style("font", "normal 12px Arial")
         .attr("transform", function(d) {
             return "translate(" +
@@ -325,7 +331,7 @@ function draw(treeData, width, height) {
         })
         .attr("dy", ".35em")
         .attr("y", function(d) {
-          return d.children ? 20 : -40;
+          return d.children ? -40 : 35;
         })
         .attr("text-anchor", "middle")
         .text(function(d) {
