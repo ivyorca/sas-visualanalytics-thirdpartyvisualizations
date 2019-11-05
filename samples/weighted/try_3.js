@@ -1,8 +1,10 @@
 //document.getElementById("c_id").addEventListener('change', onSearchInput);
-var div = d3.select("body").append("div")
-.attr("class", "tooltip")
-.style("opacity", 1e-6);
-
+var tooltip;
+var tooltip = d3
+  .select("section")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 1);
 var c_id;
 var searchField;
 var root2;
@@ -371,11 +373,12 @@ function draw(treeData, width, height) {
     });
 
   // adds the circle to the node
-  node.append("circle")
-  .on("mouseover",mouseover)
-  .on("mousemove",function(d){mousemove(d);})
-  .on("mouseout",mouseout)
-  .attr("r", 13);
+  node
+    .append("circle")
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout)
+    .attr("r", 13);
 
   // adds the text to the node
   node
@@ -446,24 +449,29 @@ construct_generations = function(d) {
 
 //======================MOUSE EVENTS==================//
 function mouseover() {
-                div.transition()
-                .duration(300)
-                .style("opacity", 1);
-            }
+  tooltip
+    .transition()
+    .duration(200)
+    .style("opacity", 0.9);
+}
 
-            function mousemove(d) {
-                div
-                .text("Company Name :" + d.data.data.id)
-                .style("left", (d3.event.pageX ) + "px")
-                .style("top", (d3.event.pageY) + "px");
-            }
+function mousemove(d) {
+  tooltip
+    .html(
+      "ID: "+d.data.data.id + "<br />" +
+        ("Parent ID: "+d.data.data.p_id)
 
-            function mouseout() {
-                div.transition()
-                .duration(300)
-                .style("opacity", 1e-6);
-            }
+    )
+    .style("left", d3.event.pageX + "px")
+    .style("top", d3.event.pageY - 50 + "px");
+}
 
+function mouseout() {
+  tooltip
+    .transition()
+    .duration(500)
+    .style("opacity", 0);
+}
 
 va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
 initChart();
