@@ -266,15 +266,15 @@ function draw(treeData, width, height) {
   //       d.parent.y
   //     );
   //   })
-  //   .attr("stroke-width", function(d) {
-  //     var strokevar;
-  //     if ((d.data.data.value / 100) * 20 < 1) {
-  //       strokevar = 1;
-  //     } else {
-  //       strokevar = (d.data.data.value / 100) * 20;
-  //     }
-  //     return strokevar;
-  //   });
+    // .attr("stroke-width", function(d) {
+    //   var strokevar;
+    //   if ((d.data.data.value / 100) * 20 < 1) {
+    //     strokevar = 1;
+    //   } else {
+    //     strokevar = (d.data.data.value / 100) * 20;
+    //   }
+    //   return strokevar;
+    // });
   //
     var link = svg.select("g").selectAll(".link")
         .data(nodes.descendants().slice(1))
@@ -284,7 +284,15 @@ function draw(treeData, width, height) {
 
     link.append("path")
         .attr("fill", "none")
-        .attr("stroke-width", "1.5px")
+        .attr("stroke-width", function(d) {
+          var strokevar;
+          if ((d.data.data.value / 100) * 20 < 1) {
+            strokevar = 1;
+          } else {
+            strokevar = (d.data.data.value / 100) * 20;
+          }
+          return strokevar;
+        })
         .attr("d", function(d) {
             return (
               "M" +
@@ -317,7 +325,7 @@ function draw(treeData, width, height) {
         })
         .attr("dy", ".35em")
         .attr("y", function(d) {
-          return d.children ? -40 : -40;
+          return d.children ? 20 : -40;
         })
         .attr("text-anchor", "middle")
         .text(function(d) {
