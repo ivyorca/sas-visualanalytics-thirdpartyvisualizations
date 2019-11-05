@@ -308,7 +308,7 @@ function draw(treeData, width, height) {
         }
         return strokevar;
       } else {
-        return 30;
+        return 5;
       }
     })
     .attr("d", function(d) {
