@@ -1,4 +1,6 @@
 //document.getElementById("c_id").addEventListener('change', onSearchInput);
+var categoryArray;
+var dp1Array;
 var tooltip;
 var tooltip = d3
   .select("section")
@@ -219,68 +221,25 @@ function updateChart() {
 }
 
 function draw(treeData, width, height) {
+  categoryArray = [];
+  dp1Array = [];
+  var depths = d3.hierarchy(treeData);
+  dp1Array = depths.data.children;
+  for (var i = 0, len = dp1Array.length; i < len; i++) {
+    categoryArray[i] = dp1Array[i].data.id; //get the depth === 1 categories
+  }
+
+  colorDomain = categoryArray;
+  var color = d3.scaleOrdinal().domain(colorDomain)
+  .range(d3.schemeCategory20);
+
   var svg = d3.select("svg");
-  // declares a tree layout and assigns the size
-  // console.log(treeData);
+  // declares a tree layout and assigns the resize
   var treemap = d3.tree().size([width - 2, height - 2]);
   //  assigns the data to a hierarchy using parent-child relationships
-  //console.log(treeData);
   var nodes = d3.hierarchy(treeData);
-
   // maps the node data to the tree layout
   nodes = treemap(nodes);
-  //
-  // // append the svg obgect to the body of the page
-  // // appends a 'group' element to 'svg'
-  // // moves the 'group' element to the top left margin
-  // var chart = d3.select("div#chart");
-  // var svg = chart.select("svg#tree")
-  //     // .select("body")
-  //     // .append("svg")
-  //     .attr("width", width + margin.left + margin.right)
-  //     .attr("height", height + margin.top + margin.bottom),
-  //   g = svg
-  //     .append("g")
-  //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // adds the links between the nodes
-  // var link = svg
-  //   .select("g")
-  //   .selectAll(".link")
-  //   .data(nodes.descendants().slice(1))
-  //   .enter()
-  //   .append("path")
-  //   .attr("class", "link")
-  //   .attr("d", function(d) {
-  //     return (
-  //       "M" +
-  //       d.x +
-  //       "," +
-  //       d.y +
-  //       "C" +
-  //       d.x +
-  //       "," +
-  //       (d.y + d.parent.y) / 2 +
-  //       " " +
-  //       d.parent.x +
-  //       "," +
-  //       (d.y + d.parent.y) / 2 +
-  //       " " +
-  //       d.parent.x +
-  //       "," +
-  //       d.parent.y
-  //     );
-  //   })
-  // .attr("stroke-width", function(d) {
-  //   var strokevar;
-  //   if ((d.data.data.value / 100) * 20 < 1) {
-  //     strokevar = 1;
-  //   } else {
-  //     strokevar = (d.data.data.value / 100) * 20;
-  //   }
-  //   return strokevar;
-  // });
-  //
 
   var div = d3
     .select("body")
@@ -299,6 +258,15 @@ function draw(treeData, width, height) {
   link
     .append("path")
     .attr("fill", "none")
+    .attr("stroke", function(d) {
+      if (d.depth === 1) {
+        return color(d.data.data.id);
+      } else if (d.depth === 2) {
+          return color(d.parent.data.id);
+      } else if (d.depth === 3) {
+        return color(d.parent.parent.data.id);
+      }
+    })
     .attr("opacity", "0.7")
     .attr("stroke-width", function(d) {
       if (d.data.data.value) {
@@ -458,9 +426,7 @@ function mouseover() {
 function mousemove(d) {
   tooltip
     .html(
-      "ID: "+d.data.data.id + "<br />" +
-        ("Parent ID: "+d.data.data.p_id)
-
+      "ID: " + d.data.data.id + "<br />" + ("Parent ID: " + d.data.data.p_id)
     )
     .style("left", d3.event.pageX + "px")
     .style("top", d3.event.pageY - 50 + "px");
