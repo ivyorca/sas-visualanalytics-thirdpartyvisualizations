@@ -164,7 +164,7 @@ function stratify_data(csv_data) {
       return d.p_id;
     })(csv_data);
   root1 = root;
-  updateChart(root1);
+//  updateChart(root1);
 }
 
 function updateChart() {
@@ -192,6 +192,7 @@ function updateChart() {
     .append("g")
     .attr("transform", "translate(" + 0 + "," + 30 + ")");
 
+  //stratify_data(g_sampleData);
   var dataTable = [];
   if (root2) {
     dataTable = root2;
@@ -203,13 +204,23 @@ function updateChart() {
 }
 
 function draw(treeData, width, height) {
+  // categoryArray = [];
+  // dp1Array = [];
+  // var depths = d3.hierarchy(treeData);
+  // var max_depth;
+  // dp1Array = depths.data.children;
+  // console.log(depths.height);
+  // for (var i = 0, len = dp1Array.length; i < len; i++) {
+  //   categoryArray[i] = dp1Array[i].data.id; //get the depth === 1 categories
+  // }
+
   categoryArray = [];
   dp1Array = [];
   var depths = d3.hierarchy(treeData);
   for (var i = 1, ht = depths.height; i <= ht; i++) {
     categoryArray[i] = i; //get the depth === 1 categories
   }
-  console.log(categoryArray);
+  console.log(categoryArray)
   colorDomain = categoryArray;
   var color = d3
     .scaleOrdinal()
