@@ -192,7 +192,8 @@ function updateChart() {
     .append("g")
     .attr("transform", "translate(" + 0 + "," + 30 + ")");
 
-  //stratify_data(g_sampleData);
+  stratify_data(d_dataTable);
+  console.log("F THIS");
   var dataTable = [];
   if (root2) {
     dataTable = root2;
